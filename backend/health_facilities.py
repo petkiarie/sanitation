@@ -1,3 +1,4 @@
+# health_facilities.py
 from flask import Blueprint, jsonify, request
 from db import get_conn
 from extensions import cache
@@ -63,7 +64,7 @@ def health_facilities_charts():
             chart_type,
             category AS label,
             SUM(value)::int AS value
-        FROM mv_health_facilities_charts
+        FROM mv_health_institutions_charts
         WHERE (%s IS NULL OR ward = %s)
         GROUP BY chart_type, category
         ORDER BY chart_type, value DESC

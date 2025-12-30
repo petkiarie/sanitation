@@ -7,6 +7,7 @@ from households import households_bp
 from learning_institutions import learning_institutions_bp
 from health_facilities import health_facilities_bp
 from other_institutions import other_institutions_bp
+from institutions_diagnostics import institutions_diagnostics_bp
 from maps import maps_bp
 from flask_cors import CORS
 
@@ -27,6 +28,8 @@ app.register_blueprint(learning_institutions_bp)
 app.register_blueprint(health_facilities_bp)
 app.register_blueprint(other_institutions_bp)
 app.register_blueprint(maps_bp)
+app.register_blueprint(institutions_diagnostics_bp)
+
 
 @app.route("/api/health")
 def health():
