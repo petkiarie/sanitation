@@ -151,3 +151,102 @@ def households_charts():
         "waterSources": dict_to_list(water_sources),
         "sharingPatterns": dict_to_list(sharing_patterns),
     })
+
+
+# ============================================================
+# SANITATION SAFETY & FUNCTIONALITY (MV 1)
+# ============================================================
+@households_bp.route("/api/households/sanitation-safety", methods=["GET"])
+@cache.cached(timeout=300, query_string=True)
+def households_sanitation_safety():
+    ward = normalize_ward()
+
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    if ward:
+        cur.execute(
+            """
+            SELECT *
+            FROM mv_household_sanitation_safety_functionality_ward
+            WHERE ward = %s
+            """,
+            (ward,)
+        )
+        row = cur.fetchone()
+    else:
+        cur.execute(
+            """
+            SELECT
+              SUM(total_households) AS total_households,
+              SUM(safe_households) AS safe_households,
+              SUM(unsafe_households) AS unsafe_households,
+
+              ROUND(
+                SUM(safe_households)::numeric
+                / NULLIF(SUM(total_households), 0) * 100,
+                1
+              ) AS safe_sanitation_pct,
+
+              ROUND(
+                SUM(unsafe_households)::numeric
+                / NULLIF(SUM(total_households), 0) * 100,
+                1
+              ) AS unsafe_sanitation_pct,
+
+              ROUND(AVG(usable_year_round_pct), 1) AS usable_year_round_pct,
+              ROUND(AVG(delayed_emptying_pct), 1) AS delayed_emptying_pct,
+              ROUND(AVG(safe_emptying_pct), 1) AS safe_emptying_pct,
+              ROUND(AVG(avg_emptying_cost_kes)) AS avg_emptying_cost_kes,
+              ROUND(AVG(flood_affected_pct), 1) AS flood_affected_pct
+
+            FROM mv_household_sanitation_safety_functionality_ward
+            """
+        )
+        row = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    return jsonify(row)
+
+
+# ============================================================
+# WASH & GOVERNANCE (MV 2)
+# ============================================================
+@households_bp.route("/api/households/wash-governance", methods=["GET"])
+@cache.cached(timeout=300, query_string=True)
+def households_wash_governance():
+    ward = normalize_ward()
+
+    conn = get_conn()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+
+    if ward:
+        cur.execute(
+            """
+            SELECT *
+            FROM mv_household_wash_governance_ward
+            WHERE ward = %s
+            """,
+            (ward,)
+        )
+        row = cur.fetchone()
+    else:
+        cur.execute(
+            """
+            SELECT
+              SUM(total_households) AS total_households,
+              ROUND(AVG(organized_solid_waste_pct), 1) AS organized_solid_waste_pct,
+              ROUND(AVG(handwashing_with_soap_pct), 1) AS handwashing_with_soap_pct,
+              ROUND(AVG(accessed_sanitation_financing_pct), 1) AS accessed_sanitation_financing_pct
+            FROM mv_household_wash_governance_ward
+            """
+        )
+        row = cur.fetchone()
+
+    cur.close()
+    conn.close()
+
+    return jsonify(row)
+
