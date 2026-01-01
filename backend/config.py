@@ -1,8 +1,8 @@
 # config.py
 DB_CONFIG = {
-    "host": "aws-1-eu-west-3.pooler.supabase.com",
+    "host": "",
     "database": "postgres",
     "user": "postgres.mqtfxbzatmunifzxnfjy",
-    "password": "27536139pk",
+    "password": "",
     "port": 5432
 }
