@@ -2,7 +2,7 @@
 DB_CONFIG = {
     "host": "",
     "database": "postgres",
-    "user": "postgres.mqtfxbzatmunifzxnfjy",
+    "user": "",
     "password": "",
     "port": 5432
 }
